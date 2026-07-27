@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex — Copilote IA pour les sinistres automobiles | AI Claims Copilot</title>
+<meta name="description" content="Alex aide les compagnies d'assurance d'Afrique francophone à traiter les sinistres automobiles plus vite, avec une meilleure qualité d'information et une détection précoce des anomalies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #0A0D26;
+  --surface-alt: #10143A;
+  --surface: #181C4C;
+  --navy: #1E2761;
+  --navy-mid: #2B3572;
+  --gold: #D9A745;
+  --gold-deep: #C9922E;
+  --line: rgba(255,255,255,0.12);
+  --line-strong: rgba(255,255,255,0.22);
+
+  --ink: #F4F2E9;
+  --ink-soft: #B7BAD6;
+  --ink-mute: #7B7FA3;
+
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--font-sans);
+  color:var(--ink);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+}
+img,svg{display:block; max-width:100%;}
+a{color:inherit;}
+:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+}
+
+.wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+@media (max-width:640px){ .wrap{padding:0 20px;} }
+
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:0.06em;
+  color:var(--gold);
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin:0 0 18px;
+}
+.eyebrow::before{content:""; width:22px; height:1px; background:var(--gold);}
+
+h1,h2,h3{font-family:var(--font-display); font-weight:600; margin:0; color:var(--ink);}
+h1{font-size:clamp(34px,5vw,58px); line-height:1.08; letter-spacing:-0.01em;}
+h2{font-size:clamp(26px,3.4vw,38px); line-height:1.16;}
+h3{font-size:19px; line-height:1.3;}
+p{margin:0;}
+.lede{font-size:18px; color:var(--ink-soft); line-height:1.7;}
+
+.btn{
+  font-family:var(--font-sans); font-weight:600; font-size:15px;
+  padding:14px 26px; border-radius:3px; border:1px solid transparent;
+  display:inline-flex; align-items:center; gap:10px; cursor:pointer;
+  text-decoration:none; transition:transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:var(--gold); color:var(--bg);}
+.btn-primary:hover{background:#E8B85B;}
+.btn-ghost{background:transparent; color:var(--ink); border-color:var(--line-strong);}
+.btn-ghost:hover{border-color:var(--gold); color:var(--gold);}
+.btn-gold{background:var(--gold); color:var(--bg);}
+.btn-gold:hover{background:#E8B85B;}
+
+/* ---------- NAV ---------- */
+.nav{
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,13,38,0.86); backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{display:flex; align-items:center; justify-content:space-between; height:72px;}
+.brand{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:19px; color:var(--gold); text-decoration:none;}
+.brand-mark{width:28px; height:28px; flex:none;}
+.nav-links{display:flex; gap:34px; font-size:14.5px; font-weight:500;}
+.nav-links a{text-decoration:none; color:var(--ink-soft);}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{display:flex; align-items:center; gap:16px;}
+@media (max-width:820px){ .nav-links{display:none;} }
+
+/* ---------- HERO ---------- */
+.hero{padding:96px 0 88px; position:relative; overflow:hidden;}
+.hero-grid{display:grid; grid-template-columns:1.05fr 0.95fr; gap:64px; align-items:center;}
+@media (max-width:960px){ .hero-grid{grid-template-columns:1fr;} }
+.hero h1{margin-bottom:22px;}
+.hero-actions{display:flex; gap:14px; margin-top:34px; flex-wrap:wrap;}
+.hero-note{margin-top:22px; font-size:13.5px; color:var(--ink-mute); font-family:var(--font-mono);}
+
+.mock{position:relative; height:440px;}
+.mock-chat{
+  position:absolute; top:0; left:0; width:78%;
+  background:var(--surface-alt); border:1px solid var(--line); border-radius:6px;
+  padding:20px; box-shadow:0 24px 48px -24px rgba(0,0,0,0.55);
+}
+.mock-chat .who{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-mute); margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.mock-chat .who .dot{width:6px; height:6px; border-radius:50%; background:#4E9B6E;}
+.bubble{max-width:82%; padding:10px 13px; border-radius:5px; font-size:13.5px; margin-bottom:10px; line-height:1.5;}
+.bubble.in{background:var(--surface); border:1px solid var(--line); color:var(--ink);}
+.bubble.out{background:var(--navy); color:var(--ink); margin-left:auto; border:1px solid var(--navy-mid);}
+
+.mock-dossier{
+  position:absolute; bottom:0; right:0; width:64%;
+  background:var(--navy); color:var(--ink); border-radius:6px;
+  padding:22px 24px; box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);
+  border:1px solid var(--navy-mid);
+}
+.mock-dossier .ref{font-family:var(--font-mono); font-size:11.5px; color:var(--gold); letter-spacing:0.05em; margin-bottom:10px;}
+.mock-dossier .title{font-family:var(--font-display); font-size:19px; margin-bottom:16px;}
+.mock-row{display:flex; justify-content:space-between; font-size:12.5px; padding:8px 0; border-top:1px solid rgba(255,255,255,0.12); color:#C7CAE0;}
+.mock-row span:last-child{color:var(--ink); font-weight:500;}
+.mock-stamp{
+  position:absolute; top:-14px; right:-10px;
+  width:96px; height:96px; border-radius:50%;
+  border:1.5px dashed var(--gold); color:var(--gold);
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:0.05em;
+  transform:rotate(9deg); line-height:1.4; padding:6px;
+  background:rgba(217,167,69,0.08);
+}
+
+.stats-section{background:var(--surface-alt); padding:70px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+.stats-head{max-width:640px; margin-bottom:44px;}
+.stats-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+@media (max-width:760px){ .stats-grid{grid-template-columns:1fr;} }
+.stat-card{background:var(--surface-alt); padding:32px 30px;}
+.stat-ref{font-family:var(--font-mono); font-size:11.5px; color:var(--gold); margin-bottom:14px;}
+.stat-num{font-family:var(--font-display); font-size:44px; color:var(--gold); margin-bottom:10px;}
+.stat-label{font-size:14.5px; color:var(--ink-soft); line-height:1.5;}
+
+.section{padding:96px 0;}
+.section-head{max-width:620px; margin-bottom:56px;}
+.section-head.center{margin-left:auto; margin-right:auto; text-align:center;}
+
+.alex-grid{display:grid; grid-template-columns:0.9fr 1.1fr; gap:64px; align-items:center;}
+@media (max-width:900px){ .alex-grid{grid-template-columns:1fr;} }
+.principle{display:flex; gap:16px; padding:18px 0; border-top:1px solid var(--line);}
+.principle:last-child{border-bottom:1px solid var(--line);}
+.principle .n{font-family:var(--font-mono); font-size:12px; color:var(--gold); min-width:26px; padding-top:2px;}
+.quote-card{
+  background:var(--navy); border:1px solid var(--navy-mid); color:var(--ink); border-radius:6px; padding:30px 32px; margin-top:28px;
+}
+.quote-card .who{font-family:var(--font-mono); font-size:11.5px; color:var(--gold); margin-bottom:12px; letter-spacing:0.04em;}
+.quote-card p{font-family:var(--font-display); font-size:19px; line-height:1.55; font-style:italic; color:#EAE8F5;}
+
+.process{display:grid; grid-template-columns:repeat(5,1fr); gap:0; border-top:1px solid var(--line); border-left:1px solid var(--line);}
+.proc-step{border-right:1px solid var(--line); border-bottom:1px solid var(--line); padding:26px 20px; position:relative;}
+.proc-step.on{background:var(--navy); border-color:var(--navy-mid);}
+.proc-ref{font-family:var(--font-mono); font-size:11px; color:var(--gold-deep); margin-bottom:16px;}
+.proc-step.on .proc-ref{color:var(--gold);}
+.proc-step h3{font-size:16.5px; margin-bottom:8px; color:var(--ink);}
+.proc-step.on h3{color:var(--ink);}
+.proc-step p{font-size:13px; color:var(--ink-soft);}
+.proc-step.on p{color:#C7CAE0;}
+@media (max-width:900px){ .process{grid-template-columns:1fr 1fr;} }
+@media (max-width:560px){ .process{grid-template-columns:1fr;} }
+
+.cap-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+@media (max-width:760px){ .cap-grid{grid-template-columns:1fr;} }
+.cap-card{background:var(--surface); padding:34px 32px;}
+.cap-ref{font-family:var(--font-mono); font-size:11.5px; color:var(--gold); margin-bottom:14px;}
+.cap-card h3{margin-bottom:10px;}
+.cap-card p{font-size:14.5px; color:var(--ink-soft);}
+
+.security{background:var(--navy); border-top:1px solid var(--navy-mid); border-bottom:1px solid var(--navy-mid); padding:96px 0;}
+.security .section-head p{color:#B9BCD6;}
+.sec-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:36px; margin-top:12px;}
+@media (max-width:900px){ .sec-grid{grid-template-columns:1fr 1fr;} }
+@media (max-width:520px){ .sec-grid{grid-template-columns:1fr;} }
+.sec-item{border-top:1px solid rgba(255,255,255,0.14); padding-top:20px;}
+.sec-item h3{color:var(--ink); font-size:16px; margin-bottom:8px;}
+.sec-item p{font-size:13.5px; color:#AEB2CE;}
+.sec-strip{margin-top:56px; padding-top:32px; border-top:1px solid rgba(255,255,255,0.14); display:flex; gap:40px; flex-wrap:wrap; align-items:center;}
+.badge{font-family:var(--font-mono); font-size:12px; color:#C7CAE0; border:1px solid rgba(255,255,255,0.22); border-radius:3px; padding:8px 14px;}
+
+.pilot{padding:96px 0; background:var(--surface-alt); border-top:1px solid var(--line); position:relative;}
+.pilot-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start;}
+@media (max-width:900px){ .pilot-grid{grid-template-columns:1fr;} }
+.pilot-timeline{display:flex; flex-direction:column;}
+.pt-item{display:grid; grid-template-columns:80px 1fr; gap:20px; padding:20px 0; border-top:1px solid var(--line);}
+.pt-item:last-child{border-bottom:1px solid var(--line);}
+.pt-item .m{font-family:var(--font-mono); font-size:12px; color:var(--gold); padding-top:2px;}
+.pt-item h3{margin-bottom:6px; font-size:16.5px;}
+.pt-item p{font-size:14px; color:var(--ink-soft);}
+.stamp-final{
+  width:150px; height:150px; border-radius:50%; border:2px dashed var(--gold);
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  transform:rotate(-8deg); margin:6px auto 32px; padding:18px;
+  font-family:var(--font-mono); color:var(--gold); font-size:12.5px; letter-spacing:0.05em; line-height:1.5;
+}
+.kpi-list{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:0;}
+.kpi{background:var(--surface); border:1px solid var(--line); border-radius:5px; padding:20px;}
+.kpi .num{font-family:var(--font-display); font-size:28px; color:var(--gold);}
+.kpi .lbl{font-size:12.5px; color:var(--ink-soft); margin-top:4px;}
+
+.coverage{padding:80px 0;}
+.chip-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:28px;}
+.chip{font-family:var(--font-mono); font-size:13px; padding:10px 18px; border:1px solid var(--line); border-radius:3px; color:var(--ink-soft);}
+.chip.lead{border-color:var(--gold); color:var(--gold); font-weight:600;}
+
+.cta{background:var(--navy); border-top:1px solid var(--navy-mid); color:var(--ink); padding:100px 0;}
+.cta-grid{display:grid; grid-template-columns:1fr 1fr; gap:64px;}
+@media (max-width:900px){ .cta-grid{grid-template-columns:1fr;} }
+.cta h2{color:var(--ink);}
+.cta .lede{color:#C7CAE0;}
+.contact-list{margin-top:32px; display:flex; flex-direction:column; gap:14px;}
+.contact-list a{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink); font-size:15px;}
+.contact-list a:hover{color:var(--gold);}
+.contact-list .ic{width:32px; height:32px; border-radius:50%; background:rgba(217,167,69,0.15); color:var(--gold); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:13px; flex:none;}
+form{display:flex; flex-direction:column; gap:14px;}
+.field{display:flex; flex-direction:column; gap:6px;}
+.field label{font-size:12.5px; color:#AEB2CE; font-family:var(--font-mono);}
+.field input, .field textarea{
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.22); border-radius:4px;
+  padding:12px 14px; color:var(--ink); font-family:var(--font-sans); font-size:14.5px;
+}
+.field input::placeholder, .field textarea::placeholder{color:#7A7FA0;}
+.field textarea{resize:vertical; min-height:90px;}
+form .btn-gold{margin-top:6px; align-self:flex-start;}
+
+footer{background:var(--bg); border-top:1px solid var(--line); color:#8E92B4; padding:64px 0 32px; font-size:13.5px;}
+.footer-top{display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:48px; padding-bottom:40px; border-bottom:1px solid var(--line);}
+@media (max-width:760px){ .footer-top{grid-template-columns:1fr; gap:32px;} }
+.footer-brand{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:18px; color:var(--gold); margin-bottom:14px;}
+.footer-brand svg{width:24px; height:24px;}
+.footer-legal{color:#7B7FA0; line-height:1.7; max-width:360px;}
+.footer-legal b{color:#AEB2CE; font-weight:600;}
+.footer-col-title{font-family:var(--font-mono); font-size:11px; letter-spacing:0.06em; color:var(--gold); margin-bottom:16px;}
+.footer-col a{display:block; color:#AEB2CE; text-decoration:none; font-size:13.5px; margin-bottom:12px;}
+.footer-col a:hover{color:var(--gold);}
+.footer-bottom{padding-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-size:12.5px; color:#6F73A0;}
+
+.reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+.reveal.in{opacity:1; transform:none;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M16 3 L28 10 L16 17 L4 10 Z" fill="#D9A745" opacity="0.95"/>
+        <path d="M16 14 L28 21 L16 28 L4 21 Z" fill="#D9A745" opacity="0.55"/>
+      </svg>
+      Alex
+    </a>
+    <div class="nav-links">
+      <a href="#constat">Le constat</a>
+      <a href="#alex">Alex</a>
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#securite">Sécurité</a>
+      <a href="#widget">Widget</a>
+      <a href="#pilote">Pilote</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#contact">Demander une démo</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">REF. AC-2026-00 · COPILOTE SINISTRES AUTOMOBILES</p>
+      <h1>Le sinistre le plus rapide est celui qui n'attend jamais.</h1>
+      <p class="lede" style="margin-top:22px; max-width:480px;">Alex accompagne vos gestionnaires sinistres automobiles : déclaration guidée, lecture des documents, analyse des dommages — pour des dossiers plus rapides, mieux informés, avec une détection précoce des anomalies.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contact">Demander une démo</a>
+        <a class="btn btn-ghost" href="#fonctionnement">Voir comment ça marche</a>
+      </div>
+      <p class="hero-note">Conçu pour les compagnies d'assurance de la zone CIMA — Côte d'Ivoire, Sénégal, Cameroun, Gabon et au-delà.</p>
+    </div>
+    <div class="mock">
+      <div class="mock-chat">
+        <p class="who"><span class="dot"></span>Alex · assistant sinistre</p>
+        <div class="bubble in">Bonjour, je suis Alex. Quand l'accident s'est-il produit ?</div>
+        <div class="bubble out">Ce matin vers 8h, à Cocody</div>
+        <div class="bubble in">Merci. Envoyez-moi le constat et 4 photos du véhicule.</div>
+      </div>
+      <div class="mock-dossier">
+        <div class="mock-stamp">DOSSIER<br>STRUCTURÉ</div>
+        <p class="ref">CLM-20260014</p>
+        <p class="title">Toyota Corolla — collision arrière</p>
+        <div class="mock-row"><span>Gravité</span><span>Moyenne</span></div>
+        <div class="mock-row"><span>Documents</span><span>4 / 4 reçus</span></div>
+        <div class="mock-row"><span>Statut</span><span>Prêt pour revue</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="stats-section" id="constat">
+  <div class="wrap">
+    <div class="stats-head reveal">
+      <p class="eyebrow">REF. AC-2026-01 · LE CONSTAT</p>
+      <h2>Un marché en croissance, freiné par ses coûts de gestion</h2>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <p class="stat-ref">01 — Pénétration</p>
+        <p class="stat-num">1,8&nbsp;%</p>
+        <p class="stat-label">Taux de pénétration moyen de l'assurance en zone CIMA.</p>
+      </div>
+      <div class="stat-card reveal">
+        <p class="stat-ref">02 — Frais de gestion</p>
+        <p class="stat-num">37&nbsp;%</p>
+        <p class="stat-label">Des primes absorbées par les frais de gestion dans la zone.</p>
+      </div>
+      <div class="stat-card reveal">
+        <p class="stat-ref">03 — Branche automobile</p>
+        <p class="stat-num">31&nbsp;%</p>
+        <p class="stat-label">Part de l'automobile dans les primes non-vie de la zone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="alex">
+  <div class="wrap alex-grid">
+    <div class="reveal">
+      <p class="eyebrow">REF. AC-2026-02 · POSITIONNEMENT</p>
+      <h2>Un copilote, jamais un pilote automatique</h2>
+      <p class="lede" style="margin-top:18px;">Alex dialogue avec l'assuré, collecte les informations et les documents, puis prépare un dossier structuré pour votre gestionnaire. La décision reste, à chaque étape, entre des mains humaines.</p>
+    </div>
+    <div class="reveal">
+      <div class="principle">
+        <span class="n">01</span>
+        <div><h3>Collecte et structure</h3><p style="font-size:14px; color:var(--ink-soft); margin-top:4px;">Déclaration, documents et photos rassemblés sans ressaisie manuelle.</p></div>
+      </div>
+      <div class="principle">
+        <span class="n">02</span>
+        <div><h3>Recommande, ne décide jamais</h3><p style="font-size:14px; color:var(--ink-soft); margin-top:4px;">Chaque analyse est une proposition soumise au gestionnaire, jamais une décision automatique.</p></div>
+      </div>
+      <div class="principle">
+        <span class="n">03</span>
+        <div><h3>Trace chaque sortie</h3><p style="font-size:14px; color:var(--ink-soft); margin-top:4px;">Toute synthèse générée par Alex est labellisée et consultable dans l'historique du dossier.</p></div>
+      </div>
+      <div class="quote-card">
+        <p class="who">ALEX — EXTRAIT DE CONVERSATION</p>
+        <p>« Bonjour, je suis Alex, votre assistant sinistre. Pouvez-vous me dire quand l'accident s'est produit ? »</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="fonctionnement" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">REF. AC-2026-03 · FONCTIONNEMENT</p>
+      <h2>Le parcours d'un sinistre avec Alex</h2>
+    </div>
+    <div class="process reveal">
+      <div class="proc-step">
+        <p class="proc-ref">ÉTAPE 01</p>
+        <h3>Déclaration</h3>
+        <p>L'assuré déclare via WhatsApp, sans application à installer.</p>
+      </div>
+      <div class="proc-step">
+        <p class="proc-ref">ÉTAPE 02</p>
+        <h3>Collecte</h3>
+        <p>Alex demande les documents et photos requis.</p>
+      </div>
+      <div class="proc-step on">
+        <p class="proc-ref">ÉTAPE 03</p>
+        <h3>Analyse Alex</h3>
+        <p>OCR, analyse des dommages, synthèse du dossier.</p>
+      </div>
+      <div class="proc-step">
+        <p class="proc-ref">ÉTAPE 04</p>
+        <h3>Revue</h3>
+        <p>Le gestionnaire valide, complète ou corrige.</p>
+      </div>
+      <div class="proc-step">
+        <p class="proc-ref">ÉTAPE 05</p>
+        <h3>Décision</h3>
+        <p>Indemnisation et clôture du dossier.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--surface-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">REF. AC-2026-04 · CAPACITÉS</p>
+      <h2>Ce qu'Alex prend en charge</h2>
+    </div>
+    <div class="cap-grid reveal">
+      <div class="cap-card">
+        <p class="cap-ref">CAP. 01</p>
+        <h3>Déclaration guidée</h3>
+        <p>Conversation naturelle sur WhatsApp pour collecter tous les éléments du sinistre, sans formulaire rigide.</p>
+      </div>
+      <div class="cap-card">
+        <p class="cap-ref">CAP. 02</p>
+        <h3>Lecture des documents</h3>
+        <p>OCR du constat, de la carte grise et du permis — les données arrivent structurées, pas ressaisies.</p>
+      </div>
+      <div class="cap-card">
+        <p class="cap-ref">CAP. 03</p>
+        <h3>Analyse des dommages</h3>
+        <p>Détection des pièces endommagées et de leur gravité à partir des photos envoyées par l'assuré.</p>
+      </div>
+      <div class="cap-card">
+        <p class="cap-ref">CAP. 04</p>
+        <h3>Détection de fraude</h3>
+        <p>Signale les incohérences au gestionnaire pour arbitrage — sans jamais bloquer un dossier seul.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="security" id="securite">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">REF. AC-2026-05 · SÉCURITÉ</p>
+      <h2>Une architecture pensée pour le secteur assurantiel</h2>
+      <p class="lede" style="margin-top:16px;">Alex s'intègre à votre système existant, sans le remplacer. Il assiste vos équipes — il ne décide jamais seul d'une indemnisation.</p>
+    </div>
+    <div class="sec-grid reveal">
+      <div class="sec-item"><h3>Chiffrement</h3><p>Données et documents chiffrés de bout en bout.</p></div>
+      <div class="sec-item"><h3>Authentification forte</h3><p>MFA et OAuth2 pour chaque accès utilisateur.</p></div>
+      <div class="sec-item"><h3>Audit complet</h3><p>Chaque consultation de dossier est journalisée et traçable.</p></div>
+      <div class="sec-item"><h3>Intégration API</h3><p>Se connecte à votre système existant, sans refonte.</p></div>
+    </div>
+    <div class="sec-strip reveal">
+      <span class="badge">Infrastructure IA certifiée SOC 2 Type II</span>
+      <span class="badge">ISO/IEC 27001:2022</span>
+      <span class="badge">ISO/IEC 42001:2023</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="widget">
+  <div class="wrap alex-grid">
+    <div class="reveal">
+      <p class="eyebrow">REF. AC-2026-06 · INTÉGRATION SITE</p>
+      <h2>Un point d'entrée sur votre propre site</h2>
+      <p class="lede" style="margin-top:18px;">Alex peut aussi vivre comme un widget installé directement sur votre site — pas seulement sur WhatsApp. Même dossier, même moteur, un canal de plus pour vos assurés déjà sur votre site.</p>
+      <div class="principle">
+        <span class="n">01</span>
+        <div><h3>Vérification avant conversation</h3><p style="font-size:14px; color:var(--ink-soft); margin-top:4px;">Alex demande le numéro de police et confirme un contrat actif avant de créer un dossier.</p></div>
+      </div>
+      <div class="principle">
+        <span class="n">02</span>
+        <div><h3>Intégré à votre marque</h3><p style="font-size:14px; color:var(--ink-soft); margin-top:4px;">Le widget s'installe sur votre domaine — vos visiteurs restent sur votre site.</p></div>
+      </div>
+      <div class="principle">
+        <span class="n">03</span>
+        <div><h3>Même dossier, deux canaux</h3><p style="font-size:14px; color:var(--ink-soft); margin-top:4px;">WhatsApp reste le canal principal de déclaration ; le widget complète pour les visiteurs déjà sur votre site.</p></div>
+      </div>
+    </div>
+    <div class="reveal" style="position:relative;">
+      <div style="background:var(--surface-alt); border:1px solid var(--line); border-radius:6px; overflow:hidden;">
+        <div style="display:flex; align-items:center; gap:6px; padding:10px 14px; border-bottom:1px solid var(--line);">
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--line-strong);"></span>
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--line-strong);"></span>
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--line-strong);"></span>
+          <span style="margin-left:8px; font-family:var(--font-mono); font-size:11px; color:var(--ink-mute);">votre-compagnie.ci</span>
+        </div>
+        <div style="padding:22px 20px 60px;">
+          <div style="width:50%; height:12px; background:var(--surface); border-radius:3px; margin-bottom:10px;"></div>
+          <div style="width:75%; height:9px; background:var(--surface); border-radius:3px; margin-bottom:8px;"></div>
+          <div style="width:60%; height:9px; background:var(--surface); border-radius:3px;"></div>
+        </div>
+      </div>
+      <div style="position:absolute; right:18px; bottom:-18px; width:264px; background:var(--navy); border:1px solid var(--navy-mid); border-radius:8px; box-shadow:0 24px 48px -20px rgba(0,0,0,0.6);">
+        <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--navy-mid);">
+          <span style="width:24px; height:24px; border-radius:50%; background:rgba(217,167,69,0.18); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:11px; color:var(--gold);">A</span>
+          <span style="font-size:12.5px; font-weight:600; color:var(--ink);">Alex</span>
+        </div>
+        <div style="padding:12px;">
+          <div style="background:var(--surface); border-radius:6px; border-bottom-left-radius:2px; padding:8px 10px; margin-bottom:8px;">
+            <p style="margin:0; font-size:12px; color:var(--ink);">Quel est votre numéro de police ?</p>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <div style="flex:1; height:28px; border-radius:4px; background:rgba(255,255,255,0.06); border:1px solid var(--navy-mid);"></div>
+            <div style="height:28px; padding:0 12px; border-radius:4px; background:var(--gold); color:var(--bg); font-size:11.5px; font-weight:600; display:flex; align-items:center;">Vérifier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pilot" id="pilote">
+  <div class="wrap pilot-grid">
+    <div class="reveal">
+      <p class="eyebrow">REF. AC-2026-07 · L'OFFRE PILOTE</p>
+      <h2>Une entrée sans risque</h2>
+      <div class="pilot-timeline" style="margin-top:32px;">
+        <div class="pt-item">
+          <span class="m">Mois 1</span>
+          <div><h3>Intégration</h3><p>Configuration WhatsApp, connexion API, formation des équipes.</p></div>
+        </div>
+        <div class="pt-item">
+          <span class="m">Mois 2-3</span>
+          <div><h3>Pilote actif</h3><p>Alex traite les sinistres en conditions réelles, sans engagement financier.</p></div>
+        </div>
+        <div class="pt-item">
+          <span class="m">Ensuite</span>
+          <div><h3>Passage commercial</h3><p>Tarification par palier de volume, alignée sur l'usage réel.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="text-align:center;">
+      <div class="stamp-final">SANS<br>ENGAGEMENT<br>3 MOIS</div>
+      <div class="kpi-list">
+        <div class="kpi"><p class="num">1 000</p><p class="lbl">sinistres traités visés</p></div>
+        <div class="kpi"><p class="num">-50&nbsp;%</p><p class="lbl">de temps administratif</p></div>
+        <div class="kpi"><p class="num">80&nbsp;%</p><p class="lbl">de documents extraits automatiquement</p></div>
+        <div class="kpi"><p class="num">&gt;80&nbsp;%</p><p class="lbl">satisfaction des gestionnaires</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="coverage">
+  <div class="wrap reveal">
+    <p class="eyebrow">REF. AC-2026-08 · ZONE COUVERTE</p>
+    <h2>Pensé pour l'Afrique francophone</h2>
+    <div class="chip-row">
+      <span class="chip lead">Côte d'Ivoire</span>
+      <span class="chip lead">Sénégal</span>
+      <span class="chip lead">Cameroun</span>
+      <span class="chip lead">Gabon</span>
+      <span class="chip">Bénin</span>
+      <span class="chip">Togo</span>
+      <span class="chip">Mali</span>
+      <span class="chip">Congo</span>
+      <span class="chip">Zone CIMA — 14 pays</span>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <div class="wrap cta-grid">
+    <div class="reveal">
+      <p class="eyebrow">REF. AC-2026-09 · CONTACT</p>
+      <h2>Prêt à essayer Alex sans risque ?</h2>
+      <p class="lede" style="margin-top:16px;">Un pilote de 3 mois, mesuré, sans engagement financier — pour construire ensemble la preuve avant l'échelle.</p>
+      <div class="contact-list">
+        <a href="mailto:contact@agenc-ai.com"><span class="ic">@</span>contact@agenc-ai.com</a>
+        <a href="https://wa.me/33744177430"><span class="ic">W</span>Discuter sur WhatsApp</a>
+      </div>
+    </div>
+    <form class="reveal" onsubmit="event.preventDefault(); this.querySelector('.btn-gold').textContent='Demande envoyée';">
+      <div class="field">
+        <label for="name">Nom</label>
+        <input id="name" type="text" placeholder="Votre nom" required>
+      </div>
+      <div class="field">
+        <label for="company">Compagnie d'assurance</label>
+        <input id="company" type="text" placeholder="Nom de la compagnie" required>
+      </div>
+      <div class="field">
+        <label for="email">Email professionnel</label>
+        <input id="email" type="email" placeholder="vous@compagnie.com" required>
+      </div>
+      <div class="field">
+        <label for="msg">Message</label>
+        <textarea id="msg" placeholder="Parlez-nous de votre contexte sinistres..."></textarea>
+      </div>
+      <button class="btn btn-gold" type="submit">Demander une démo</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M16 3 L28 10 L16 17 L4 10 Z" fill="#D9A745" opacity="0.95"/>
+            <path d="M16 14 L28 21 L16 28 L4 21 Z" fill="#D9A745" opacity="0.55"/>
+          </svg>
+          Alex
+        </div>
+        <p class="footer-legal">Alex est une solution développée par <b>SAS 2 Cash Enterprise</b>, dédiée aux compagnies d'assurance et courtiers d'Afrique francophone.</p>
+        <p class="footer-legal" style="margin-top:14px;">© 2026 <b>SAS 2 Cash Enterprise</b> (Holding) — 1 Rue Hartz Huel, 22500 Kerfot, France<br>Exploitation : <b>Agen'C AI</b> — Abidjan, Côte d'Ivoire</p>
+        <a href="https://wa.me/33744177430" style="display:inline-flex; align-items:center; gap:8px; margin-top:16px; color:var(--gold); text-decoration:none; font-size:13.5px;">Contact WhatsApp →</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">PRODUIT</p>
+        <a href="#alex">Comment ça marche</a>
+        <a href="#fonctionnement">Fonctionnement</a>
+        <a href="#widget">Widget site</a>
+        <a href="#securite">Sécurité</a>
+        <a href="#pilote">Pilote</a>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col-title">LÉGAL</p>
+        <a href="confidentialite.html">Confidentialité</a>
+        <a href="cgu.html">CGU</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Afrique francophone · Zone CIMA</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+}, {threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
